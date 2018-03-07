@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>加载图片的使用</title>
+</head>
+
+<body>
+<script type="text/javascript" src="sea.js"></script>
+<script type="text/javascript">
+
+  seajs.config({
+	//设置操作的根目录,如果不填写，默认是当前页面存在的目录
+    //base: "http://localhost:8077/img_load/",
+	//设置文件的别名
+	alias:{
+		"PAGES":"key2.js"
+	}
+  });
+ 
+ //加载defined.js文件
+ seajs.use("defined",function(main){
+	 	//调用defined.js文件返回对象中的方法
+	 	main.init();
+		//这边的PAGE对象是key2.js中定义的，但是，key2.js文件是在defined.js文件中加载的，此时在此处也能访问defined.js中加载的对象
+		console.log("index.html输出-----------在index.html中获取key2.js中定义的对象中的属性====>"+PAGE.path);
+		console.log("index.html输出-----------在index.html中获defined_Obj.js中定义的对象中的属性====>"+method.name);
+		 
+		 //为什么这边的seajs.use("img_load");要写在上面的use代码里面，因为img_load.js文件中用到了common2.js中的对象CT，
+		 //如果写在外面，由于img_load.js中没有手动加载common2.js文件，会导致报错
+		 //写在里面，正好上面已经加载了common2.js文件
+		 
+		 //为了加载img_load.js文件不报错，有两个解决方案
+		 //一：把img_load.js的use写在上面的use里面
+		 //二：把img_load.js的use写在外面，但是img_load.js里面的代码需要手动require("common2)一下，同时封装的代码要写在define(function(require){}里面
+		 seajs.use("img_load",function(main){
+
+				var doc = document;
+				var head = doc.head || doc.getElementsByTagName("head")[0] || doc.documentElement;
+				//var node = doc.createElement("img");
+				//node.src = "http://localhost:8077/tt/testImg3.jpg";
+				
+				var node2 = doc.createElement("img");
+				node2.src = "http://localhost:8077/tt/testImg4.jpg";
+				
+				var node3 = doc.createElement("img");
+				node3.src = "http://localhost:8077/tt/testImg5.gif";
+				
+				var node4 = doc.createElement("img");
+				node4.src = "http://localhost:8077/tt/testImg6.png";
+				/*
+				PAGE.img.loadImg(node,function(a){
+					console.log(a[0].src+"===单个图片加载成功");
+					document.body.appendChild(a[0]);
+				});
+				*/
+				PAGE.img.loadImg(node2,function(a){
+					console.log(a[0].src+"===单个图片加载成功");
+					document.body.appendChild(a[0]);
+				});
+				
+				PAGE.img.loadImg([node3,node4],function(a){
+					document.body.appendChild(a[0]);
+					document.body.appendChild(a[1]);
+					console.log(a.length+"===两个图片加载成功");
+				});
+			});
+	 });
+	 
+
+
+window.onload = function(){
+	//文档加载完成也能访问加载js中的对象
+	console.log("index.html输出-----------文档加载完成，也能访问加载js文件中的对象====>"+method.name);	
+}
+
+</script>
+</body>
+</html>
